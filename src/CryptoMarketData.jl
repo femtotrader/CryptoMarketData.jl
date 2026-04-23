@@ -63,6 +63,7 @@ export get_saved_markets
 # 1 implementation
 export save!
 export load
+export load_remote
 export earliest_candle
 export get_candles_for_day
 export save_day!
@@ -429,6 +430,17 @@ function load(exchange::AbstractExchange, market; datadir="./data", span=missing
             # what select method I was conflicting with.
             DataFrames.select(:ts2=>:ts, :o, :h, :l, :c, :v) 
         end
+    end
+end
+
+"""$(TYPEDSIGNATURES)
+
+Load candles using the exchange's API.
+"""
+function load_remote(exchange::AbstractExchange, market; span::StepRange{Date,Day}=today():today(), tf::Union{Period,Missing}=missing, delay=0.5, table=DataFrame)
+    @chain span begin
+        map(day -> get_candles_for_day(exchange, market, day), _)
+        vcat(_...)
     end
 end
 
