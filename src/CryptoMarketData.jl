@@ -391,6 +391,7 @@ Load candles for the given exchange and market from the file system.
 * span - a `Date` span that defines what Dates to load candles.  If it's `missing`, load everything.
 * tf - a `Period` that is used to aggregate 1m candles into higher timeframes.
 * table - a Tables.jl-compatible struct to load candles into.  The default is `DataFrame`.
+* remote - fill in gaps in local storage by querying APIs
 
 # Example
 
@@ -399,9 +400,10 @@ julia> bitstamp = Bitstamp()
 julia> btcusd4h = load(bitstamp, "BTC/USD"; span=Date("2024-01-01"):Date("2024-02-10"), tf=Hour(4))
 ```
 """
-function load(exchange::AbstractExchange, market; datadir="./data", span=missing, tf::Union{Period,Missing}=missing, table=DataFrame)
+function load(exchange::AbstractExchange, market; datadir="./data", span=missing, tf::Union{Period,Missing}=missing, table=DataFrame, remote=false)
     indir = joinpath(datadir, short_name(exchange), replace(market, "/" => ""))
     cfs = readdir(indir; join=true)
+    out_of_range = false        # XXX: This is a flag used by the `if remote` block
     if !ismissing(span)
         if typeof(span) <: UnitRange
             cfs = cfs[span]
@@ -409,6 +411,12 @@ function load(exchange::AbstractExchange, market; datadir="./data", span=missing
             # convert span to UnitRange
             a = _d2i(first(span), cfs)
             b = _d2i(last(span), cfs)
+            # @info "might be out of range" a b span (b > span.stop)
+            if ismissing(b)
+                b = lastindex(cfs)
+                out_of_range = true
+                # @info "replacement for missing b" b size(cfs)
+            end
             cfs = cfs[range(a, b)]
         end
     end
@@ -423,6 +431,26 @@ function load(exchange::AbstractExchange, market; datadir="./data", span=missing
             res = csv
         else
             append!(res, csv)
+        end
+    end
+
+    # fill in gaps in local storage with remotely fetched data
+    if remote && out_of_range
+        # load_remote
+        # - get the last day from local storage
+        # - fetch until span.stop
+        last_ts = res[end, :ts]
+        last_day = Date(floor(last_ts, Day))
+        remote_span = last_day:span.stop
+        rcs = load_remote(exchange, market; span=remote_span)
+        # - skip candles already in the dataframe
+        i = 1
+        while candle_datetime(rcs[i]) <= last_ts && i < length(rcs)
+            i += 1
+        end
+        # - push the remaining candles on to the dataframe
+        for j in i:length(rcs)
+            push!(res, convert(NamedTuple, rcs[j]))
         end
     end
 
