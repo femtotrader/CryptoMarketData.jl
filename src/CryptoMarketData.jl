@@ -92,7 +92,7 @@ export subscribe # XXX: This is getting replaced with something based on Visor.
 
 """$(TYPEDSIGNATURES)
 
-Take any AbstractCandle `c` and return a NamedTuple that an be pushed into a DataFrame.
+Take any AbstractCandle `c` and return a NamedTuple that can be pushed into a DataFrame.
 """
 function Base.convert(::Type{NamedTuple}, c::AbstractCandle)
     (;
