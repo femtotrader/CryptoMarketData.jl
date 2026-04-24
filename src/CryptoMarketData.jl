@@ -90,6 +90,20 @@ export subscribe # XXX: This is getting replaced with something based on Visor.
 # `Base.merge(a::C, b::C) where {C <: AbstractCandle}` should be implemented too.
 #    (It's already exported by Julia, so there's no need to export here.)
 
+"""$(TYPEDSIGNATURES)
+
+Take any AbstractCandle `c` and return a NamedTuple that an be pushed into a DataFrame.
+"""
+function Base.convert(::Type{NamedTuple}, c::AbstractCandle)
+    (;
+     :ts => candle_datetime(c),
+     :o  => c.o,
+     :h  => c.h,
+     :l  => c.l,
+     :c  => c.c,
+     :v  => c.v)
+end
+
 """
     subscribe(url::String)
 
