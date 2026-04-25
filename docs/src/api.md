@@ -44,6 +44,10 @@ load
 ```
 
 ```@docs
+load_remote
+```
+
+```@docs
 earliest_candle
 ```
 
