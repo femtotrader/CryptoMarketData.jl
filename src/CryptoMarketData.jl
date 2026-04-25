@@ -381,17 +381,17 @@ function get_candles_for_day(exchange::AbstractExchange, market, day::Date)
 end
 
 """
-$(SIGNATURES)
+$(TYPEDSIGNATURES)
 
 Load candles for the given exchange and market from the file system.
 
 # Keyword Arguments
 
 * datadir="./data" - directory where saved data is stored
-* span - a `Date` span that defines what Dates to load candles.  If it's `missing`, load everything.
-* tf - a `Period` that is used to aggregate 1m candles into higher timeframes.
-* table - a Tables.jl-compatible struct to load candles into.  The default is `DataFrame`.
-* remote - fill in gaps in local storage by querying APIs
+* span - a `Date` span that defines what Dates to load candles.  If it's `missing`, load everything
+* tf - a `Period` that is used to aggregate 1m candles into higher timeframes
+* table - a Tables.jl-compatible struct to load candles into.  The default is `DataFrame`
+* remote - if true, fill in gaps in local storage by fetching from remote sources
 
 # Example
 
@@ -400,7 +400,7 @@ julia> bitstamp = Bitstamp()
 julia> btcusd4h = load(bitstamp, "BTC/USD"; span=Date("2024-01-01"):Date("2024-02-10"), tf=Hour(4))
 ```
 """
-function load(exchange::AbstractExchange, market; datadir="./data", span=missing, tf::Union{Period,Missing}=missing, table=DataFrame, remote=false)
+function load(exchange::AbstractExchange, market; datadir="./data", span=missing, tf::Union{Period,Missing}=missing, table=DataFrame, remote::Boolean=false)
     indir = joinpath(datadir, short_name(exchange), replace(market, "/" => ""))
     cfs = readdir(indir; join=true)
     out_of_range = false        # XXX: This is a flag used by the `if remote` block
