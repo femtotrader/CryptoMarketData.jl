@@ -91,6 +91,15 @@ Base.merge
 ```@docs
 subscribe
 ```
+
+### Other
+
+- [`Base.convert`](@ref)
+
+```@docs
+Base.convert
+```
+
 ## Select
 
 This was originally [NHDaly/Select.jl](https://github.com/NHDaly/Select.jl), but because it wasn't
