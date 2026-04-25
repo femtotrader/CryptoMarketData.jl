@@ -400,7 +400,7 @@ julia> bitstamp = Bitstamp()
 julia> btcusd4h = load(bitstamp, "BTC/USD"; span=Date("2024-01-01"):Date("2024-02-10"), tf=Hour(4))
 ```
 """
-function load(exchange::AbstractExchange, market; datadir="./data", span=missing, tf::Union{Period,Missing}=missing, table=DataFrame, remote::Boolean=false)
+function load(exchange::AbstractExchange, market; datadir="./data", span=missing, tf::Union{Period,Missing}=missing, table=DataFrame, remote::Bool=false)
     indir = joinpath(datadir, short_name(exchange), replace(market, "/" => ""))
     cfs = readdir(indir; join=true)
     out_of_range = false        # XXX: This is a flag used by the `if remote` block
