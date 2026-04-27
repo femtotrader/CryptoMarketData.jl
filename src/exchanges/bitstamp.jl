@@ -101,6 +101,11 @@ function get_candles(bitstamp::Bitstamp, market; start, stop, tf=Minute(1), limi
     end
 end
 
+# TODO: I may want to document this once to cover all specializations.
+"""$(TYPEDSIGNATURES)
+
+Return the websocket URI for the given exchange.
+"""
 function ws_uri(bitstamp::Bitstamp)
     URI(bitstamp.ws_url)
 end
