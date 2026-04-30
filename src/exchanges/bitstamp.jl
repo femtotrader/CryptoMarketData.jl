@@ -110,12 +110,16 @@ function ws_uri(bitstamp::Bitstamp)
     URI(bitstamp.ws_url)
 end
 
+## This is used by CryptoMarketData.update! and every exchange should implement this for their candle type.
+
 function Base.merge(a::BitstampCandle, b::BitstampCandle)
     @assert a.timestamp == b.timestamp # hopefully, whoever is calling update can guarantee this, so I can get rid of this.
     high = max(a.high, b.high)
     low  = min(a.low, b.low)
     return BitstampCandle(a.timestamp, a.open, high, low, b.close, b.volume)
 end
+
+## The following Base.merge methods are used by code that consumes data from websokets.
 
 # a is the last candle
 # b is the new data
