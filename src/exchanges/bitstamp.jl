@@ -110,10 +110,6 @@ function ws_uri(bitstamp::Bitstamp)
     URI(bitstamp.ws_url)
 end
 
-# For Bitstamp, this won't get used, because their websocket doesn't give me candles
-# -- just price and amount.
-# I might get rid of it, but it's a good example for exchanges whose websockets
-# do give me unfinished candles.
 function Base.merge(a::BitstampCandle, b::BitstampCandle)
     @assert a.timestamp == b.timestamp # hopefully, whoever is calling update can guarantee this, so I can get rid of this.
     high = max(a.high, b.high)
