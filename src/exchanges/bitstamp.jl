@@ -125,7 +125,7 @@ end
 # b is the new data
 # return an updated candle if a and be are in the same tf
 # or return a new candle if a and b are in different tfs
-function Base.merge(a::BitstampCandle, b::Dict{String, Any}; tf=Minute(1))
+function Base.merge(a::BitstampCandle, b::AbstractDict; tf=Minute(1))
     price  = b["data"]["price"]
     amount = b["data"]["amount"]
     b_ts   = parse(UInt64, b["data"]["timestamp"])
@@ -159,7 +159,7 @@ end
 
 # When there is no initial candle, pass the desired type so we can dispatch to this function
 # to create the initial candle.
-function Base.merge(a::Type{BitstampCandle}, b::Dict{String, Any}; tf=Minute(1))
+function Base.merge(a::Type{BitstampCandle}, b::AbstractDict; tf=Minute(1))
     price  = b["data"]["price"]
     amount = b["data"]["amount"]
     b_ts   = parse(UInt64, b["data"]["timestamp"])
